@@ -1,0 +1,52 @@
+package com.koreait.jpaitem.domain;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+public class Item {
+	
+	@Id
+	@GeneratedValue	// 전략 생략하면 AUTO
+	@Column(name = "MEMBER_ID")
+	private Long id;
+	private Long name;
+	private Long city;
+	private Long street;
+	private Long zipcode;
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public Long getName() {
+		return name;
+	}
+	public void setName(Long name) {
+		this.name = name;
+	}
+	public Long getCity() {
+		return city;
+	}
+	public void setCity(Long city) {
+		this.city = city;
+	}
+	public Long getStreet() {
+		return street;
+	}
+	public void setStreet(Long street) {
+		this.street = street;
+	}
+	public Long getZipcode() {
+		return zipcode;
+	}
+	public void setZipcode(Long zipcode) {
+		this.zipcode = zipcode;
+	}
+	
+	
+}

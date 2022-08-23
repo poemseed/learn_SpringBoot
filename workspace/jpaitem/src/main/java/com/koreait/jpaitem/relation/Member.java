@@ -1,0 +1,70 @@
+package com.koreait.jpaitem.relation;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+
+//@Entity
+public class Member {
+	
+	@Id @GeneratedValue
+	@Column(name = "MEMBER_ID")
+	private Long id;
+	@Column(name = "USERNAME")
+	private String name;
+	
+//	@Column(name = "TEAM_ID")
+//	private Long teamId;
+	
+	/*
+	 * 1대 다의 개념을 알려줘야 하는데, 
+	 * DB의 기준으로 1대 다의 개념을 알려줘야 한다.
+	 * @ManyToOne	: 여기서는 Team이 하나이다.
+	 * @JoinColum(name="TEAM_ID")	: 관계 컬럼을 적어준다. TEAM_ID와 조인해야 한다.
+	 */
+	// 외래키가 있는 객체가 주인이다.
+	@ManyToOne
+	@JoinColumn(name = "TEAM_ID")
+	private Team team;
+	
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Team getTeam() {
+		return team;
+	}
+	public void setTeam(Team team) {
+		this.team = team;
+//		team.getMember().add(this);
+	}
+	public void changeTeam(Team team) {
+		this.team = team;
+		team.getMember().add(this);
+	}
+	
+	
+	@Override
+	public String toString() {
+		return "Member [id=" + id + ", name=" + name + ", team=" + team + "]";
+	}
+	
+	
+	
+	
+	
+	
+}

@@ -1,0 +1,22 @@
+package com.koreait.jpaTest;
+
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+public class Orders {
+	
+	@Id @GeneratedValue
+	@Column(name = "ORDER_ID")
+	private Long id;
+	
+	@Column(name = "MEMBER_ID")
+	private Long memberId;
+	
+	private LocalDateTime orderDate;
+	private String status;
+	
+	
+}

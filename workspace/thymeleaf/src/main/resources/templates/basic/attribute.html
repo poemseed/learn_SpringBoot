@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>속성 설정</h1>
+	<!-- 이름을 타임리프를 이용해서 다시 재정의해줄 수 있음 -->
+	<input type="text" name="mock" th:name="userA">
+	<h1>속성 추가</h1>
+	<!-- 클래스 추가해보기 -->
+	<!-- th:attrappend : 속성 값의 뒤에 값을 추가한다. (띄어쓰기는 되지 않음) -->
+	- th:attrappend = <input type="text" class="text" th:attrappend="class=' large'"><br>
+	<!-- th:attrprepend : 속성 값의 앞에 값을 추가한다. (띄어쓰기는 되지 않음) -->
+	- th:attrprepend = <input type="text" class="text" th:attrprepend="class='large'"><br>
+	<!-- th:classappend : class 속성에 자연스럽게 추가한다.(띄어쓰기까지 되어서 포함된다.) -->
+	- th:classappend = <input type="text" class="text" th:classappend="large">
+	
+	<h1>checked 처리</h1>
+	- checked=false <input type="checkbox" name="active" checked="false"><br>
+	- checked O <input type="checkbox" name="active" th:checked="true"><br>
+	- checked X <input type="checkbox" name="active" th:checked="false">
+</body>
+</html>

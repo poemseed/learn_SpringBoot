@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<script>
+		let username = "[[${user.username}]]";
+		let age = [[${user.age}]];
+	
+		// 자바스크립트 네츄럴 템플릿
+		let username2 = /*[[${user.username}]]*/ "test username";
+		
+		// 객체
+		// 주소값이 나오면서 에러가 난다
+		let user = [[${user}]];
+		
+	</script>
+	
+	<!-- 백단에서 넘겨준 값은 타임리프 인라인을 통해 자바스크립트에서도 사용가능 -->
+	<script th:inline="javascript">
+		let username_th = [[${user.username}]];
+		let age_th = [[${user.age}]];
+	
+		// 자바스크립트 네츄럴 템플릿
+		let username2_th = /*[[${user.username}]]*/ "test username";
+		
+		// 객체
+		// 제이슨타입으로 객체를 던져줌
+		let user_th = [[${user}]];
+		
+	</script>
+	
+	<!-- 백단에서 넘겨준 값을 제이슨타입으로 받아서 활용할수 있다. -->
+	<script th:inline="javascript">
+       [# th:each="user, stat : ${users}"]
+          let user[[${stat.count}]] = [[${user}]];
+       [/]
+   </script>
+</body>
+</html>

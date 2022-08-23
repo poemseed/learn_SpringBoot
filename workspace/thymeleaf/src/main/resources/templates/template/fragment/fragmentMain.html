@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>부분 포함</h1>
+	
+	<h2>부분 포함 insert</h2>
+	<!-- insert : div태그안에 footer가 들어간다. 즉, 현재 태그 내부에 추가 -->
+	<div th:insert="~{template/fragment/footer :: copy}"></div>
+	
+	<h2>부분 포함 replace</h2>
+	<!-- replace : 교체(대체)한다. 즉, 현재 태그를 대체 -->
+	<div th:replace="~{template/fragment/footer :: copy}"></div>
+	
+	<h2>부분 포한 단순 표현식</h2>
+	<!-- 축약식으로 표현할 수 있다. -->
+	<div th:replace="template/fragment/footer :: copy"></div>
+	
+	<h1>파라미터 사용</h1>
+	<div th:replace="~{template/fragment/footer :: copyParam('파람1','파람2')}"></div>
+	
+</body>
+</html>

@@ -1,0 +1,87 @@
+package com.koreait.jpaitem;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+
+import com.koreait.jpaitem.relation.Member;
+import com.koreait.jpaitem.relation.Team;
+
+public class JpaMain3 {
+	
+	public static void main(String[] args) {
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+		EntityManager em = emf.createEntityManager();
+		// Transaction	: 데이터베이스의 상태를 변화시키기 위해 수행하는 작업 단위
+		EntityTransaction tx = em.getTransaction();
+		tx.begin();
+		
+		try {
+			/*
+			Member member = new Member();
+			member.setName("member1");
+			em.persist(member);
+			
+			Team team = new Team();
+			team.setName("TeamA");
+			team.getMember().add(member);	// 읽기만 가능해서 아무리 데이터를 넣어도 넣어지지 않음
+			em.persist(team);
+			*/
+			
+			Team team = new Team();
+			team.setName("TeamA");
+			em.persist(team);
+			
+			Member member = new Member();
+			member.setName("member1");
+//			member.setTeam(team); 		// 연관관계의 주인에게 값을 설정
+			member.changeTeam(team); 	// setter를 바꿔주지 말고 새로운 메서드를 만들어서 그것 이용하기
+			em.persist(member);
+			
+			// 강제로 db쿼리를 보고 싶을때
+//			em.flush();
+//			em.clear();
+			
+			/*
+			 * 결과	: insert문만 실행, select문은 실행되지 않는다.
+			 * 이유	: team이 영속성 컨텍스트에 들어가 있는데(1차캐시), 
+			 * 		  현재 변경된 것을 감지하지 못한 상태(flush가 호출되지 않은 상태)에서
+			 * 		  검색을 하니 select가 되지 않는 것
+			 * 		  즉, 1차 캐시에서 담긴 내용이 그대로 조회된다.
+			 */
+			
+			// 해당 로직을 setter에다가 넣어준다.
+//			team.getMember().add(member);	// ArrayList를 사용했기때문에 add를 넣어줘야한다.(여러건이 있으니깐)
+			
+			System.out.println("--------------------------------------------------");
+			Team findTeam = em.find(Team.class, team.getId());		// Team을 기준으로 Member를 꺼내오기
+			List<Member> members = findTeam.getMember();
+			
+			// StackOverflowError
+			//System.out.println("members = " + findTeam );
+			
+			for( Member m : members ) {
+				System.out.println("m = " + m.getName() );
+			}
+			System.out.println("--------------------------------------------------");
+			
+			tx.commit();
+		}catch(Exception e){
+			tx.rollback();
+		}finally {
+			em.close();
+			emf.close();
+		}
+		
+		
+		
+		
+		
+		
+		
+	}
+
+}

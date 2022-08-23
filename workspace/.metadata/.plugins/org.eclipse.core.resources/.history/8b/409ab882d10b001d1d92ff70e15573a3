@@ -1,0 +1,13 @@
+package com.koreait.jpa;
+
+public class JpaMain3 {
+
+	public static void main(String[] args) {
+		
+		// id, username에 임의의 데이터 insert 1건, table생성
+		
+		
+		
+	}
+
+}

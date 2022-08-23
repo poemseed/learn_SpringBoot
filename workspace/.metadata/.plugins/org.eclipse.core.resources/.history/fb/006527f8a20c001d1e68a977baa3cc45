@@ -1,0 +1,75 @@
+package com.koreait.jpaitem;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+
+import com.koreait.jpaitem.relation.Member;
+import com.koreait.jpaitem.relation.Team;
+
+public class JpaMain3 {
+	
+	public static void main(String[] args) {
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+		EntityManager em = emf.createEntityManager();
+		// Transaction	: 데이터베이스의 상태를 변화시키기 위해 수행하는 작업 단위
+		EntityTransaction tx = em.getTransaction();
+		tx.begin();
+		
+		try {
+			/*
+			Member member = new Member();
+			member.setName("member1");
+			em.persist(member);
+			
+			Team team = new Team();
+			team.setName("TeamA");
+			team.getMember().add(member);	// 읽기만 가능해서 아무리 데이터를 넣어도 넣어지지 않음
+			em.persist(team);
+			*/
+			
+			Team team = new Team();
+			team.setName("TeamA");
+			em.persist(team);
+			
+			Member member = new Member();
+			member.setName("member1");
+			member.setTeam(team); 		// 연관관계의 주인에게 값을 설정
+			em.persist(member);
+			
+			// 강제로 db쿼리를 보고 싶을때
+//			em.flush();
+//			em.clear();
+			
+			/*
+			 * insert문만 실행, select문은 실행되지 않는다.
+			 */
+			System.out.println("--------------------------------------------------");
+			Team findTeam = em.find(Team.class, team.getId());		// Team을 기준으로 Member를 꺼내오기
+			List<Member> members = findTeam.getMember();
+			
+			for( Member m : members ) {
+				System.out.println("m = " + m.getName() );
+			}
+			System.out.println("--------------------------------------------------");
+			
+			tx.commit();
+		}catch(Exception e){
+			tx.rollback();
+		}finally {
+			em.close();
+			emf.close();
+		}
+		
+		
+		
+		
+		
+		
+		
+	}
+
+}

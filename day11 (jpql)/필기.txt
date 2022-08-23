@@ -1,0 +1,109 @@
+1. 값 타입
+ 1-1. 임베디드 타입(내장 타입)
+	- @Embeddable	: 값 타입을 정의하는 곳에 표시
+	- @Embedded	: 값 타입을 사용하는 곳에 표시
+	- 기본 생성자 필수
+	- DB입장에서는 바뀔게 없고, 객체에서 mapping만 바뀐다.
+
+ 1-2. @AttributeOverride	: 속성 재정의
+	- 한 엔티티에서 같은 값 타입을 사용하면 컬럼 명이 중복된다.
+	- 컬럼명 속성을 재정의
+
+2. JPQL 소개
+
+ 2-1. JPQL
+	- JPA는 다양한 쿼리 방법을 지원
+	- JPA를 사용하면 엔티티 객체를 중심으로 개발
+	- 문제는 검색 쿼리
+	- 검색을 할 때도 테이블이 아닌 엔티티 객체를 대상으로 검색
+	- 모든 DB데이터를 객체로 변환해서 검색하는 것은 불가능
+	- SQL은 데이터베이스 테이블을 대상으로 쿼리
+	- JPQL은 엔티티 객체를 대상으로 쿼리
+
+ 2-2. jpql문법
+	- select m from Member as m where m.age > 18
+	- 엔티티와 속성은 대소문자 구분 O (Member, age)
+		-> java 클래스 대소문자 구분하기 때문
+	- JPQL 키워드는 대소문자 구분 X(SELECT, FROM, WHERE)
+	- 엔티티 이름 사용, 테이블 이름이 아님(Member)
+
+ 2-3. 반환 타입
+	- TypeQuery	: 반환 타입이 명확할 때 사용
+	- Query	: 반환 타입이 명확하지 않을 때 사용
+
+	// 타입 정보가 명확할때
+	TypeQuery<Member> query = 
+		em.createQuery("select m from Member m", Member.class);
+
+	// 타입 정보가 String.class로 반환타입이 명확할때 사용
+	TypeQuery<String> query2 = 
+		em.createQuery("select m.username from Member m", String.class);
+
+	// m.username, m.age	: 반환타입이 명확하지 않을 때
+	Query query3 = 
+		em.createQuery("select m.username, m.age from Member m");
+
+ 2-4. 결과 조회 API
+	- query.getResultList()
+		-> 결과가 하나 이상일때, 리스트 반환
+		-> 결과가 없으면 빈 리스트 반환
+		-> 빈 collection이 반환이 되기 때문에, nullPointException에 대한 걱정은 하지 않아도 된다.
+
+	- query.getSingleResult()
+		-> 결과가 정확히 하나, 단일 객체 반환
+		-> 결과가 없으면	: NoResultException
+		-> 둘 이상이면	: NonUniqueResultException
+
+ 2-5. 파라미터 바인딩
+	- select m from Member m where m.age = 10
+	- 이름 기준
+		select m from Member m where m.username = :username
+
+		query.setParameter("username", usernameParam);
+	
+	- 위치 기준(쓰지 말것)
+		select m from Member m where m.username = ?1
+
+		query.setParameter(1, usernameParam);
+
+ 2-6. 프로젝션
+	- select 절에서 조회할 대상을 지정하는 것
+	- select m from Member m
+		-> 엔티티 프로젝션	: Member 엔티티 조회
+	- select m.team from Member m
+		-> 엔티티 프로젝션	: Member와 관련된 team을 가지고 온다.
+	- select m.username, m.age from Member m
+		-> 스칼라 타입(숫자, 문자등 기본 데이터타입) 프로젝션
+
+ 2-7. 프로젝션 - 여러 값 조회
+	- select m.username, m.age from Member m
+
+	- 1. Query타입으로 조회
+	- 2. Object[] 타입으로 조회
+	- 3. new 명령어로 조회
+		-> 단순 값을 DTO로 바로 조회
+		-> 패키지명을 포함한 전체 클래스 명 입력
+		-> 순서와 타입이 일치하는 생성자 필요
+
+ 2-8. 페이징 API
+	- JPA는 페이징을 다음 두 API로 추상화
+	- setFirstResult( int startPosition)	: 조회 시작 위치
+	- setMaxResult( int maxResult )	: 조회할 데이터 수
+	- 몇 번째부터 몇 개 가지고 올래?
+
+ 2-9. 조인
+	- 내부조인(inner)
+	- select m from Member m [inner] join m.team t
+
+	- 외부조인(outer)
+	- select m from Member m left [outer] join m.team t
+
+ 2-10. 서브쿼리
+	- select m from Member m 
+	 where m.age > (select avg(m2.age) from Member m2)
+
+** JPA - QueryDSL
+
+
+
+

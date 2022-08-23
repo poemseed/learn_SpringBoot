@@ -1,0 +1,46 @@
+package com.koreait.jpa;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+
+public class JpaMain3 {
+
+	public static void main(String[] args) {
+		
+		// id, username에 임의의 데이터 insert 1건, table생성
+		
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+		EntityManager em = emf.createEntityManager();
+		// Transaction	: 데이터베이스의 상태를 변화시키기 위해 수행하는 작업 단위
+		EntityTransaction tx = em.getTransaction();
+		tx.begin();
+		
+		try {
+			
+			// 비영속 상태
+			Member2 member2 = new Member2();
+			member2.setId("spring");
+			member2.setUsername("스프링");
+			
+			// 여기서부터 영속 상태
+			System.out.println("------before-----");
+			em.persist(member2);
+			System.out.println("------after-----");
+			
+			// 쿼리 실행 시점
+			tx.commit();
+		}catch(Exception e){
+			tx.rollback();
+		}finally {
+			em.close();
+			emf.close();
+		}
+
+
+
+		
+	}
+
+}

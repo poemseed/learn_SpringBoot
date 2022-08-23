@@ -1,0 +1,121 @@
+**오라클에 새로운 계정 만들기
+sqlplus -> system, 1234 -> create user 새아이디 identified by 비밀번호; -> grant connect, resource to 새아이디;
+
+1. ORM이란
+	- Object-relational mapping(객체 관계 매핑)
+	- 객체는 객체대로 설계
+	- 관계형 데이터베이스는 관계형 데이터베이스대로 설계
+	- ORM 프레임워크가 중간에서 매핑
+	- 우리가 일반적으로 알고 있는 애플리케이션 Class와 RDB(Relational DataBase)의 테이블을 매핑(연결)한다는 뜻이며, 기술적으로는 어플리케이션의
+	객체를 RDB테이블에 자동으로 영속화 해주는 것이라고 보면 된다.
+
+	- 장점
+		-> SQL문이 아닌 Method를 통해서 DB를 조작할 수 있다.
+		-> 개발자는 비지니스 로직을 구성하는데만 집중할 수 있음
+		-> Query와 같이 필요한 선언문, 할당 등의 부수적인 코드가 줄어들어, 각종 객체에 대한 코드를 별도로 작성하여 코드의 가독성을 높임
+		-> 매핑하는 정보가 Class로 명시되기 때문에 ERD를 보는 의존도를 낮출 수 있다.
+		-> 기존 방식에서 Oracle 데이터베이스를 사용하다가, PostgreSQL로 변환한다고 가정해보면, 새로 쿼리를 짜야하는 경우가 생김. 이런 경우에
+		ORM을 사용한다면 쿼리를 수정할 필요가 없음.
+
+	- 단점
+		-> 프로젝트의 규모가 크고 복잡하고 설계가 잘못된 경우, 속도 저하 및 일관성을 무너뜨리는 문제점이 생길 수 있음
+		-> 복잡하고 무거운 쿼리는 속도를 위해 별도의 튜닝 작업이 필요하기 때문에, 결국 쿼리문을 별도로 써야할 수도 있다.
+		-> 학습비용이 비쌈
+
+2. JPA
+	- Java Persistence API
+	- 자바 진영의 ORM 기술 표준
+	- 자바 어플리케이션에서 관계형 데이터베이스를 사용하는 방식을 정의한 인터페이스
+	- JPA가 제공하는 API를 사용하면 객체를 DB에 저장하고 관리할때, 개발자가 직접 SQL을 작성하지 않아도 된다.
+	- JPA가 개발자 대신 적절한 SQL을 생성해서 DB에 전달하고, 객체를 자동으로 Mapping한다.
+	- JPA는 내부적으로 JDBC API를 활용한다.
+
+3. 데이터베이스 방언
+	- JPA는 특정 데이터베이스에 종속되지 않는다.
+	- 방언	: SQL표준을 지키지 않는 특정 데이터베이스만의 고유한 기능
+	- Oracle 이라고 하는 사투리를 써서 쿼리를 작성해 라는 뜻
+
+4. JPQL
+	- JPA를 사용하면 객체를 중심으로 개발
+	- JPA는 SQL을 추상화한 JPQL이라는 객체 지향 쿼리 언어 제공
+	- SQL문법과 유사, select, from, where, group by, having, join 지원
+	- JPQL은 객체를 대상으로 한다. -> 객체 지향 SQL
+	- SQL은 데이터베이스 테이블을 대상으로 쿼리
+
+5. 영속성 관리 - JPA내부 구조
+ 5-1. 영속성 컨텍스트
+	- JPA를 이해하는데 가장 중요한 용어
+	- "엔티티를 영구 저장하는 환경"
+	- EntityManager.persist( entity );
+		-> entity	: Member, Team, ...
+		-> 처음부터 DB에 저장하는 게 아니라 영속성 컨텍스트라는 곳에 저장한다. 
+
+ 5-2. 엔티티 생명주기
+	- 비영속(new/transient) - JPA와 전혀 상관없는 상태
+		: 영속성 컨텍스트와 전혀 관계가 없는 새로운 상태
+
+		// 객체를 생성한 상태
+		Member member = new Member();
+		member.setId("member1");
+		member.setName("name1");
+
+	- 영속(managed) - JPA에 속해있는 상태
+		: 영속성 컨텍스트에 관리되는 상태
+
+		// 객체를 생성한 상태
+		Member member = new Member();
+		member.setId("member1");
+		member.setName("name1");
+
+		EntityManger em = emf.createEntityManger();
+		em.getTransaction().begin();
+
+		// 객체를 저장한 상태(영속)
+		em.persist(member);
+	
+	- 준영속(detached)
+		: 영속성 컨텍스트에 저장되었다가 분리된 상태
+
+		// 회원 엔티티를 영속성 컨텍스트에서 분리, 준영속 상태
+		em.detach(member);
+
+	- 삭제(remove)
+		: 삭제된 상태	
+
+		// 객체 삭제를 요청한 상태
+		em.remove(member);
+
+ 5-3. 영속성 컨텍스트의 이점
+	- 1차 캐시
+	- 동일성(identity)보장
+	- 트랜잭션을 지원하는 쓰기 지연(transactional write-behind)
+	- 변경 감지
+	- 지연 로딩
+
+ 5-4. 1차 캐시 - 1
+	
+	// 엔티티 생성
+	Member member = new Menber();
+	member.setId("member1");
+	member.setName("name1");
+
+	// 엔티티를 영속
+	// 저장 -> 1차 캐시에 저장됌
+	em.persist(member);
+
+	// 조회
+	Member findMember = em.find(Member.class, "member1");
+	
+       1차 캐시 -2
+
+	Member findMember2 = em.find(Member.class, "member2");	
+
+ 5-5. 동일성(identity)보장
+	
+	Member a = em.find(Member.class, "member1");
+
+	. . .
+	Member b = em.find(Member.class,"member1");
+
+	- 1차 캐시로 반복 가능한 읽기 등급의 트랜잭션 격리 수준을 데이터베이스가 아닌 애플리케이션 차원에서 제공
+
